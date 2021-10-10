@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: vscode
+
+namePrefix: vscode-
+
+commonLabels:
+  app: vscode
+  username: shkarface
+  environment: staging
+
+bases:
+  - oauth2-proxy
+
+resources:
+  - ingress.yaml
+  - service.yaml
+  - deployment.yaml
+  - workspace-data-pvc.yaml

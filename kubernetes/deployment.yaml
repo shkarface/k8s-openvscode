@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+  labels:
+    app: vscode
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vscode
+  template:
+    metadata:
+      labels:
+        app: vscode
+    spec:
+      securityContext:
+        fsGroup: 1000
+
+      containers:
+        - name: server
+          image: reg.dev.krd/library/vscode-server:1.60.2
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256M
+            limits:
+              cpu: 2
+              memory: 1Gi
+
+          ports:
+            - name: http
+              containerPort: 3000
+
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /
+
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /
+
+          volumeMounts:
+            - mountPath: /home/workspace
+              name: data
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: workspace-data
